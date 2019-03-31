@@ -158,5 +158,5 @@ module_exit(hello_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Breno");
-MODULE_DESCRIPTION("Hello");
-MODULE_VERSION("1.0.0");
+MODULE_DESCRIPTION("LinuxStepperDriver");
+MODULE_VERSION("0.0.1");
