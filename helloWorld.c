@@ -68,16 +68,16 @@ static struct file_operations helloworld_fops =
   
 };
 
-unsigned long timer_interval_ns = 1e6;
+unsigned long timer_interval_ns = 1e3;
 static struct hrtimer hr_timer;
  
 static enum hrtimer_restart timerCallback( struct hrtimer * timer_for_restart)
 {
   	ktime_t currtime , interval;
   	currtime  = ktime_get();
-  	interval = ktime_set(1,timer_interval_ns); 
+  	interval = ktime_set(0,timer_interval_ns); 
   	hrtimer_forward(timer_for_restart, currtime , interval);
-  	printk("timer callback");
+  	//printk("timer callback");
   	gpio_on = !gpio_on;
   	gpio_set_value(GPIO_TEST, gpio_on);          // Not required as set by line above (here for reference)
 	// set_pin_value(PIO_G,9,(cnt++ & 1)); //Toggle LED 
@@ -122,8 +122,8 @@ static int __init hello_init(void)
 	}
 
 	gpio_request(GPIO_TEST, "sysfs");          // gpioLED is hardcoded to 49, request it
-	gpio_direction_output(GPIO_TEST, TRUE);   // Set the gpio to be in output mode and on
-	gpio_on = TRUE;
+	gpio_direction_output(GPIO_TEST, 1);   // Set the gpio to be in output mode and on
+	gpio_on = 1;
 
 
 	k_timer = ktime_set(1, 0);
