@@ -10,14 +10,19 @@
 
 #include <linux/ktime.h>
 #include <linux/hrtimer.h>
+#include <linux/gpio.h>                 // Required for the GPIO functions
 
 #define DEVICE_NAME "HelloWorld"
 #define CLASS_NAME "chardrv"
+
+#define GPIO_TEST	10
 
 
 static dev_t first; // Global variable for the first device number
 static struct cdev c_dev; // Global variable for the character device structure
 static struct class *cl; // Global variable for the device class
+
+static volatile uint8_t  gpio_on;
 
 static enum hrtimer_restart timerCallback( struct hrtimer * param);
 
@@ -73,6 +78,8 @@ static enum hrtimer_restart timerCallback( struct hrtimer * timer_for_restart)
   	interval = ktime_set(1,timer_interval_ns); 
   	hrtimer_forward(timer_for_restart, currtime , interval);
   	printk("timer callback");
+  	gpio_on = !gpio_on;
+  	gpio_set_value(GPIO_TEST, gpio_on);          // Not required as set by line above (here for reference)
 	// set_pin_value(PIO_G,9,(cnt++ & 1)); //Toggle LED 
 	return HRTIMER_RESTART;
 } 
@@ -113,6 +120,10 @@ static int __init hello_init(void)
 	    unregister_chrdev_region(first, 1);
 	    return -1;
 	}
+
+	gpio_request(GPIO_TEST, "sysfs");          // gpioLED is hardcoded to 49, request it
+	gpio_direction_output(GPIO_TEST, TRUE);   // Set the gpio to be in output mode and on
+	gpio_on = TRUE;
 
 
 	k_timer = ktime_set(1, 0);
